@@ -1,6 +1,6 @@
 # MicroJava Compiler
 
-A compiler for the MicroJava programming language, made as a project for the course Compiler Construction 1, School of Electrical Engineering, University of Belgrade (year 2025).
+A compiler for the MicroJava programming language, made as a project for the course **Compiler Construction 1**, School of Electrical Engineering, University of Belgrade (year 2025).
 
 The compiler translates syntactically and semantically correct MicroJava programs into MicroJava bytecode, which is executed on the MicroJava virtual machine (MJVM).
 
