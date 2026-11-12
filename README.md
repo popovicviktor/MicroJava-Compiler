@@ -14,26 +14,26 @@ The compiler has four basic parts: lexical analysis, syntax analysis, semantic a
 
 The lexer reads the source code character by character and groups the characters into tokens: identifiers, numbers, char and bool constants, keywords (`program`, `print`, `new`, ...) and operators. Spaces, tabs, line breaks and `//` comments are skipped, because the rest of the compiler doesn't need them.
 
-If the lexer meets a character that doesn't belong to the language, it prints the character and the line number to standard error (the console) and continues, so one bad character doesn't stop the whole compilation.
+If the lexer encounters a character that doesn't belong to the language, it prints the character and the line number to the console and continues, so one bad character doesn't stop the whole compilation.
 
 The token rules are defined in `spec/mjlexer.lex`. JFlex generates the lexer class `Yylex.java` from that file.
 
 ### 2. Syntax analysis
 
-The parser takes the tokens from the lexer and checks that they are in the right order according to the grammar of the language. For example, it checks that a declaration looks like `type name;` and that a statement ends with `;`. While doing that, it builds the syntax tree (AST) of the program, which the next phases work on.
+The parser takes the tokens from the lexer and checks that they are in the right order according to the grammar of the language. For example, it checks that a variable declaration consists of a type followed by a name and ends with `;`. While doing that, it builds the syntax tree (AST) of the program, which the next phases work on.
 
-If the program breaks a grammar rule, the parser logs an error with the line number. It can also recover from some errors and continue parsing, so more than one error can be found in a single run. Here, recovery is done for assignment statements: after an error the parser skips tokens until the next `;`.
+If the program breaks a grammar rule, the parser logs an error with the line number. It can also recover from some errors and continue parsing, so more than one error can be found in a single run. Recovery is implemented for assignment statements: after an error the parser skips tokens until the next `;`.
 
 The grammar is in `spec/mjparser.cup`. The parser and the syntax tree classes (`rs.ac.bg.etf.pp1.ast`) are generated with AST-CUP.
 
 ### 3. Semantic analysis
 
-The grammar can't check everything. For example, `x = 5;` is correct syntax, but it only makes sense if `x` was declared and is an `int`. The semantic analyzer (`SemAnalyzer`) walks through the syntax tree and checks this kind of thing, using the symbol table, where all declared names are stored with their types.
+The grammar can't check everything. For example, `x = 5;` is correct syntax, but it only makes sense if `x` was declared and is an `int`. The semantic analyzer (`SemAnalyzer`) traverses the syntax tree and checks this kind of thing, using the symbol table, where all declared names are stored with their types.
 
-It checks, among other things, that:
+Some of the checks:
 - every name is declared before it is used, and not declared twice in the same scope
 - types match in assignments and constant declarations
-- `int` is used for arithmetic, `++`/`--` and array indexes
+- arithmetic operands, `++`/`--` operands and array indexes are of type `int`
 - `read` and `print` get valid types, and `union` gets sets
 - method calls have the right number and types of arguments
 - the program has a `main` method
@@ -42,11 +42,11 @@ Every use of a constant, global variable or local variable is logged (line, name
 
 ### 4. Code generation
 
-If the program has no syntax or semantic errors, the code generator (`CodeGenerator`) walks through the syntax tree once more and writes MJVM instructions for each node: loading values, arithmetic, storing to variables, array access, `read`, `print` and so on. The result is an executable `.obj` file, which can be disassembled and run on the MicroJava virtual machine.
+If the program has no syntax or semantic errors, the code generator (`CodeGenerator`) traverses the syntax tree once more and generates MJVM instructions for operations such as loading and storing values, arithmetic, array access, `read` and `print`. The result is an executable `.obj` file, which can be disassembled and run on the MicroJava virtual machine.
 
 ---
 
-## What compiler supports
+## What the compiler supports
 
 The grammar below is the subset of MicroJava that the compiler handles (the full grammar is in `spec/mjparser.cup`).
 
@@ -95,7 +95,14 @@ Also:
 - `void main()` with no arguments, global and local variables (single values and arrays), global constants
 - arrays of `int`, `char` and `bool`
 - sets of integers: `new set[n]`, `union`, printing
-- built-in methods: `chr`, `ord`, `len`, `add`, `addAll`
+- built-in methods:
+  - `chr(i)` converts an `int` to a `char`
+  - `ord(c)` converts a `char` to an `int`
+  - `len(a)` returns the length of an array
+  - `add(s, x)` adds the `int` `x` to the set `s` (duplicates are ignored)
+  - `addAll(s, a)` adds all elements of the `int` array `a` to the set `s`
+
+---
 
 ## Tools
 
