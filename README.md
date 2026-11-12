@@ -107,18 +107,12 @@ Also:
 ## Tools
 
 - JDK 1.8 (Java 8)
-- Apache Ant
-- JFlex
-- AST-CUP
-- Symbol table library
-- MicroJava runtime
-- log4j
-
-**Tool usage:**
-
-- **Generated code:** The lexer and the parser are not written by hand, they are generated from description files. JFlex builds the lexer from the token rules (`spec/mjlexer.lex`), and AST-CUP builds the parser and the syntax tree classes from the grammar (`spec/mjparser.cup`).
-- **Hand-written code:** The semantic analysis and the code generation are written by hand. The semantic analysis keeps the declared names and their types in the symbol table library. The code generation uses the MicroJava runtime to write the bytecode.
-- **Helper tools:** Ant runs the build, and log4j is used to log the output of the compiler.
+- Apache Ant: runs the build
+- JFlex: generates the lexer
+- AST-CUP: generates the parser and the syntax tree classes
+- Symbol table library: used by the semantic analyzer
+- MicroJava runtime: used by the code generator to write the bytecode
+- log4j: logs the output of the compiler
 
 ---
 
